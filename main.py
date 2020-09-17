@@ -1,6 +1,6 @@
 import requests
 from lxml import html
-
+import urllib
 
 def get_link(package_name):
     url = "https://pypi.org/simple/"+package_name
@@ -10,8 +10,5 @@ def get_link(package_name):
         return (body.xpath('//a/@href')[-1])
     return 'No suck package'
 
-
-
-f=open(r'D:\file_bdseo.zip',"wb") #окрываем файл для записи, в режиме wb
-
-f.write(get_link().content)
+r = requests.get(get_link("django"), allow_redirects=True)
+open('archive.zip', 'wb').write(r.content)
