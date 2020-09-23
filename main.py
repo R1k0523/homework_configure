@@ -1,8 +1,9 @@
 import io
 import xml.etree.ElementTree as Et
+import urllib
 import urllib.request
 import zipfile
-from graphviz import Digraph
+import webbrowser
 
 
 def load(url):
@@ -56,15 +57,23 @@ def get_pypi_graph(name):
 
 
 def gv(graph):
-    lines = ["digraph G {"]
+    lines = "digraph{"
     for v1 in graph:
-        for v2 in graph:
+        for v2 in graph[v1]:
             if not v1 == v2:
-                lines.append('"%s" -> "%s"' % (v1, v2))
-    lines.append("}")
-    return "\n".join(lines)
+                v1 = v1.replace('-', '_').replace('.', ',')
+                v2 = v2.replace('-', '_').replace('.', ',')
+                lines += '%s->%s;' % (v1, v2)
+    lines += "}"
+    return lines
 
-g = get_pypi_graph("django")
-print (gv(g))
+def get_graph(name):
+    graph = get_pypi_graph(name)
+    digraph = gv(graph)
+    print(digraph)
+    url = "https://quickchart.io/graphviz?graph=" +digraph
+    webbrowser.open(url, new=2)
+
+get_graph("jupyter")
 
 
