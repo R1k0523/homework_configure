@@ -95,6 +95,6 @@ def gv_text(graph):
     lines.append("}")
     return ("\n").join(lines)
 
-get_graph("jupyter")
+get_graph(input())
 
 
