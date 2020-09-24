@@ -7,12 +7,18 @@ from urllib.request import urlopen
 
 
 def load(url):
+    try:
+        urlopen(url)
+    except:
+        return
     with urlopen(url) as f:
         data = f.read()
     return data
 
 def get_package_url(name):
     data = load("https://pypi.org/simple/%s/" %name)
+    if data == None:
+        return
     root = ElTree.fromstring(data)
     package_url = None
     for elem in root[1]:
@@ -35,10 +41,11 @@ def get_package_deps(url):
         line = line.replace(";", " ").split()
         if not line:
             break
-        if line[0] == "Requires-Dist:":
-            if (len(re.findall('\[|]', line[1]))>0):
-                line[1] = re.split('\[|]', line[1])[1]
+        if line[0] == "Requires-Dist:" and "extra" not in line:
             deps.append(line[1])
+        elif line[0] == "Provides-Extra:":
+            deps.append(re.sub(r"[^A-Za-z]", "", line[1]))
+
     return deps
 
 def get_pypi_graph(name):
@@ -88,7 +95,6 @@ def gv_text(graph):
     lines.append("}")
     return ("\n").join(lines)
 
-
-get_graph("django")
+get_graph("jupyter")
 
 
